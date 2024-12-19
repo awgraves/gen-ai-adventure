@@ -1,13 +1,24 @@
 from flask import Flask
-import os
+from langchain_core.messages import HumanMessage
+from langchain_openai import ChatOpenAI
 
 app = Flask(__name__)
 
-API_KEY = os.environ.get('API_KEY', None)
+# OPENAI_API_KEY set via ENV
+model = ChatOpenAI(model="gpt-4o-mini")
+
 
 @app.route("/")
 def chat():
-    return {"status": "working", "API_KEY": API_KEY}
+    output = model.invoke([
+        HumanMessage(content="Hi! I'm Bob"),
+        HumanMessage(content="Whats my name?")
+    ])
+    print(output.content)
+    return {"response": output.content}
+
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80, debug=True)
+    PORT = 8080
+    print(f"Running on port {8080}")
+    app.run(host="0.0.0.0", port=PORT, debug=True)

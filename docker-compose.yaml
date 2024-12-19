@@ -3,7 +3,7 @@ services:
   server:
     build: ./server
     ports:
-      - 8888:80
+      - 8080:8080
     volumes:
       - ./server:/app
     env_file:
