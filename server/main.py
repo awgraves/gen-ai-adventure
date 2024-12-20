@@ -1,14 +1,21 @@
 from flask import Flask
+from flask_cors import CORS
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
 
 app = Flask(__name__)
+CORS(app, origins=["http://localhost"])
 
 # OPENAI_API_KEY set via ENV
 model = ChatOpenAI(model="gpt-4o-mini")
 
 
-@app.route("/")
+@app.route("/test")
+def index():
+    return {"text": "Hello World!"}
+
+
+@app.route("/chat")
 def chat():
     output = model.invoke([
         HumanMessage(content="Hi! I'm Bob"),

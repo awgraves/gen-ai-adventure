@@ -1,0 +1,6 @@
+.plotPointList {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  list-style-type: none;
+}
