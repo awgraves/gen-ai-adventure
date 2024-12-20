@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Parchment background -->
+  <rect x="10" y="10" width="80" height="80" rx="10" ry="10" fill="#f1e2b3" stroke="black" stroke-width="2"/>
+
+  <!-- Dotted path -->
+  <path d="M 15,45 C 30,30, 50,60, 70,50 C 75,40, 85,40, 80,30" stroke="black" stroke-dasharray="4" fill="none" stroke-width="2"/>
+
+  <!-- Treasure X -->
+  <line x1="75" y1="20" x2="85" y2="30" stroke="red" stroke-width="3"/>
+  <line x1="85" y1="20" x2="75" y2="30" stroke="red" stroke-width="3"/>
+
+
+  <!-- Compass Rose (Bottom Right) -->
+  <!-- Outer Circle -->
+  <circle cx="75" cy="70" r="10" fill="white" stroke="black" stroke-width="2"/>
+  
+  <!-- Compass Lines -->
+  <line x1="75" y1="60" x2="75" y2="65" stroke="black" stroke-width="2"/> <!-- North -->
+  <line x1="65" y1="70" x2="70" y2="70" stroke="black" stroke-width="2"/> <!-- West -->
+  <line x1="80" y1="70" x2="85" y2="70" stroke="black" stroke-width="2"/> <!-- East -->
+  <line x1="75" y1="75" x2="75" y2="80" stroke="black" stroke-width="2"/> <!-- South -->
+
+  <!-- Compass needle -->
+  <line x1="69" y1="65" x2="75" y2="70" stroke="red" stroke-width="2"/> <!-- red -->
+  <line x1="75" y1="70" x2="81" y2="75" stroke="blue" stroke-width="2"/> <!-- red -->
+</svg>
+
