@@ -1,19 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserInput } from "./UserInput";
 import { PlotPoint } from "./types";
 import { PlotBoard } from "./PlotBoard";
+import useWebsocket, { ReadyState } from "react-use-websocket";
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 export const Story: React.FC = () => {
   const [plotPoints, setPlotPoints] = useState<PlotPoint[]>([]);
 
+  const { sendJsonMessage, lastJsonMessage, readyState } = useWebsocket(
+    "ws://" + SERVER_URL + "/story"
+  );
+
   const addPlotPoint = (str: string) => {
-    setPlotPoints([...plotPoints, { text: str }]);
+    sendJsonMessage({ text: str });
   };
 
   const fetchInitialStory = async () => {
-    await fetch(SERVER_URL + "/test")
+    await fetch("http://" + SERVER_URL + "/test")
       .then(async (res) => {
         const data = await res.json();
         setPlotPoints([...plotPoints, data]);
@@ -23,6 +28,12 @@ export const Story: React.FC = () => {
       });
   };
 
+  useEffect(() => {
+    if (lastJsonMessage !== null) {
+      setPlotPoints([...plotPoints, lastJsonMessage]);
+    }
+  }, [lastJsonMessage]);
+
   return (
     <div>
       {plotPoints.length === 0 ? (
@@ -31,6 +42,7 @@ export const Story: React.FC = () => {
         </button>
       ) : (
         <div>
+          WS status: {ReadyState[readyState]}
           <PlotBoard plotPoints={plotPoints} />
           <UserInput onSubmit={addPlotPoint} />
         </div>
