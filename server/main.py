@@ -1,16 +1,27 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_sock import Sock
-from langchain_core.messages import HumanMessage
-from langchain_openai import ChatOpenAI
+from plot import Plot
+
 import json
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost"])
 sock = Sock(app)
 
-# OPENAI_API_KEY set via ENV
-model = ChatOpenAI(model="gpt-4o-mini")
+
+class WSExtender:
+    def __init__(self, ws):
+        self.ws = ws
+
+    def receive_json(self):
+        rawData = self.ws.receive()
+        data = json.loads(rawData)
+        return data
+
+    def send_json(self, rawData):
+        data = json.dumps(rawData)
+        self.ws.send(data)
 
 
 @app.route("/test")
@@ -19,26 +30,23 @@ def index():
 
 
 @sock.route("/story")
-def story(ws):
-    count = 0
+def story(raw_ws):
+    ws = WSExtender(raw_ws)
+    plot = Plot()
+
     while True:
-        rawData = ws.receive()
-        data = json.loads(rawData)
-        count += 1
-
-        final = f"{data.get('text', '')}  {count}"
-        res = json.dumps({"text": final})
-        ws.send(res)
-
-
-@app.route("/chat")
-def chat():
-    output = model.invoke([
-        HumanMessage(content="Hi! I'm Bob"),
-        HumanMessage(content="Whats my name?")
-    ])
-    print(output.content)
-    return {"response": output.content}
+        data = ws.receive_json()
+        # if theme is set, create a new plot
+        if "theme" in data:
+            plot = Plot(theme=data.get("theme"))
+            ws.send_json({"text": "Starting..."})
+            ws.send_json(plot.begin())
+            continue
+        elif "text" in data:
+            next_point = plot.advance(data)
+            ws.send_json(next_point)
+        else:
+            break
 
 
 if __name__ == "__main__":

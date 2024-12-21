@@ -1,6 +1,12 @@
 .plotPointList {
+  list-style-type: none;
   display: flex;
   flex-direction: column;
-  gap: 1em;
-  list-style-type: none;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.plotPoint {
+  border: 1px solid #646cff;
 }
