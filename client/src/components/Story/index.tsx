@@ -9,6 +9,10 @@ const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 export const Story: React.FC = () => {
   const [plotPoints, setPlotPoints] = useState<PlotPoint[]>([]);
+  const [latestNarrative, setLatestNarrative] = useState<PlotPoint | null>(
+    null
+  );
+  const [isLoading, setIsLoading] = useState(false);
 
   const { sendJsonMessage, lastJsonMessage, readyState } = useWebsocket(
     "ws://" + SERVER_URL + "/story"
@@ -16,17 +20,14 @@ export const Story: React.FC = () => {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const addPlotPoint = (str: string) => {
-    const point = { text: str };
+    const point: PlotPoint = { text: str, type: "CHOICE" };
     setPlotPoints([...plotPoints, point]);
+    setIsLoading(true);
     sendJsonMessage(point);
   };
 
   const beginStory = () => {
     sendJsonMessage({ theme: "aliens" });
-  };
-
-  const regenerateLastResponse = () => {
-    sendJsonMessage({ regenerate: true });
   };
 
   const scrollToBottom = () => {
@@ -40,7 +41,10 @@ export const Story: React.FC = () => {
         return;
       }
       if ("text" in lastJsonMessage) {
-        setPlotPoints([...plotPoints, lastJsonMessage]);
+        const newNarrative = { type: "NARRATIVE", ...lastJsonMessage };
+        setPlotPoints([...plotPoints, newNarrative]);
+        setLatestNarrative(newNarrative);
+        setIsLoading(false);
       }
     }
   }, [lastJsonMessage]);
@@ -67,9 +71,11 @@ export const Story: React.FC = () => {
             WS status: {ReadyState[readyState]}
           </span>
           <PlotBoard plotPoints={plotPoints} />
-          {plotPoints[plotPoints.length - 1].options?.length && (
+          {isLoading && <span>Loading...</span>}
+          {latestNarrative && !isLoading && (
             <PlayerOptions
-              options={plotPoints[plotPoints.length - 1].options || []}
+              key={latestNarrative.text}
+              options={latestNarrative.options || []}
               onSelect={addPlotPoint}
             />
           )}

@@ -1,0 +1,13 @@
+.optionsList {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+  justify-content: center;
+}
+.option {
+  will-change: filter;
+  transition: filter 300ms;
+}
+.option:focus-visible {
+  filter: drop-shadow(0 0 1em #646cffaa);
+}

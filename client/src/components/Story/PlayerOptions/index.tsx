@@ -1,25 +1,28 @@
 import { useState } from "react";
+import styles from "./PlayerOptions.module.css";
 
-export const PlayerChoices: React.FC<{
+export const PlayerOptions: React.FC<{
   options: string[];
-  onSubmit: (choice: string) => void;
-}> = ({ options, onSubmit }) => {
+  onSelect: (choice: string) => void;
+}> = ({ options, onSelect }) => {
   const [choice, selectedChoice] = useState<null | string>(null);
 
   const onClick = (choice: string) => {
     if (choice !== null) {
       selectedChoice(choice);
-      onSubmit(choice);
+      onSelect(choice);
     }
   };
 
   return (
-    <div>
-      {options.map((option) => (
+    <div className={styles.optionsList}>
+      {options.map((option, idx) => (
         <button
           key={option}
+          autoFocus={idx === 0}
           onClick={() => onClick(option)}
           disabled={choice !== null}
+          className={styles.option}
         >
           {option}
         </button>

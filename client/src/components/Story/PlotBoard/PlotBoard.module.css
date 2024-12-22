@@ -8,5 +8,10 @@
 }
 
 .plotPoint {
-  border: 1px solid #646cff;
+  margin: 0.5em;
+}
+
+.plotChoice {
+  font-weight: bold;
+  color: #646cffaa;
 }
