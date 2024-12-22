@@ -1,0 +1,24 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  align-items: center;
+  justify-content: left;
+}
+
+.list {
+  list-style-type: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1em;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  will-change: filter;
+  transition: filter 300ms;
+  margin: 0;
+  padding: 0;
+}

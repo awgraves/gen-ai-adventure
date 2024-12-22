@@ -29,6 +29,21 @@ def index():
     return {"text": "Hello World!"}
 
 
+@app.route("/themes")
+def themes():
+    return [{
+            "description": "Play as Captain Morgan, a pirate captain seeking a lost treasure.",
+            "value": "pirate",
+            "imagePath": "/static/pirate.webp"
+            },
+            {
+            "description": "Play as Major Tom, an astronaut seeking a rare mineral on an alien planet.",
+            "value": "astronaut",
+            "imagePath": "/static/astronaut.webp"
+            },
+            ]
+
+
 @sock.route("/story")
 def story(raw_ws):
     ws = WSExtender(raw_ws)
@@ -39,7 +54,6 @@ def story(raw_ws):
         # if theme is set, create a new plot
         if "theme" in data:
             plot = Plot(theme=data.get("theme"))
-            ws.send_json({"text": "Starting..."})
             ws.send_json(plot.begin())
             continue
         elif "text" in data:

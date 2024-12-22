@@ -8,6 +8,14 @@ h1 {
   text-align: center;
 }
 
+button {
+  will-change: filter;
+  transition: filter 300ms;
+}
+button:focus-visible {
+  filter: drop-shadow(0 0 1em #646cffaa);
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;

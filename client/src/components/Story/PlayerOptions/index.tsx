@@ -22,7 +22,6 @@ export const PlayerOptions: React.FC<{
           autoFocus={idx === 0}
           onClick={() => onClick(option)}
           disabled={choice !== null}
-          className={styles.option}
         >
           {option}
         </button>

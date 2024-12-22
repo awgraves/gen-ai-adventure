@@ -10,6 +10,18 @@ TIMEOUT = 15
 
 PIRATE = "a pirate named Captain Morgan who is seeking a lost treasure"
 
+ASTRONAUT = "an astronaut named Major Tom who is seeking a rare mineral on an alien planet"
+
+
+def get_person_for_theme(theme):
+    if theme == "pirate":
+        return PIRATE
+    elif theme == "astronaut":
+        return ASTRONAUT
+    else:
+        return PIRATE
+
+
 system_template = """
 You are the guide of a story about {person}.
 
@@ -36,13 +48,16 @@ class PlotData(TypedDict):
                        ...,
                        "The options for the player to choose from. If end of story, use 'THE END.' do not include any question marks or numbers in the options"]
 
+# TODO: try prompting for a 1 sentence summary of each turn and storing those in the history
+# rather than the full text
+
 
 class Plot:
     def __init__(self, theme="pirate"):
-        self.theme = theme
         self.model = ChatOpenAI(
             model=MODEL, max_retries=MAX_RETRIES, timeout=TIMEOUT)
         self.system_message = system_template
+        self.protagonist = get_person_for_theme(theme)
         self.chat_history: list[BaseMessage] = []
 
     def _call_model(self):
@@ -55,7 +70,7 @@ class Plot:
         chain = prompt_template | self.model.with_structured_output(
             PlotData, method="json_schema")
 
-        answer = chain.invoke({"person": PIRATE})
+        answer = chain.invoke({"person": self.protagonist})
 
         self.chat_history.append(AIMessage(answer.get("text", "")))
 

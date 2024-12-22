@@ -4,19 +4,21 @@ import { PlotPoint } from "./types";
 import { PlotBoard } from "./PlotBoard";
 import useWebsocket, { ReadyState } from "react-use-websocket";
 import styles from "./Story.module.css";
+import { getImageUrl, STORY_WS_URL } from "../../const";
+import { ThemeOption } from "../../types";
 
-const SERVER_URL = import.meta.env.VITE_SERVER_URL;
-
-export const Story: React.FC = () => {
+export const Story: React.FC<{
+  theme: ThemeOption;
+}> = ({ theme }) => {
   const [plotPoints, setPlotPoints] = useState<PlotPoint[]>([]);
   const [latestNarrative, setLatestNarrative] = useState<PlotPoint | null>(
     null
   );
   const [isLoading, setIsLoading] = useState(false);
+  const hasInitialFetch = useRef(false);
 
-  const { sendJsonMessage, lastJsonMessage, readyState } = useWebsocket(
-    "ws://" + SERVER_URL + "/story"
-  );
+  const { sendJsonMessage, lastJsonMessage, readyState } =
+    useWebsocket(STORY_WS_URL);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const addPlotPoint = (str: string) => {
@@ -27,8 +29,16 @@ export const Story: React.FC = () => {
   };
 
   const beginStory = () => {
-    sendJsonMessage({ theme: "aliens" });
+    setIsLoading(true);
+    sendJsonMessage({ theme: theme.value });
   };
+
+  useEffect(() => {
+    if (!hasInitialFetch.current) {
+      beginStory();
+      hasInitialFetch.current = true;
+    }
+  }, [theme]);
 
   const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -55,33 +65,32 @@ export const Story: React.FC = () => {
 
   return (
     <div className={styles.story}>
-      {plotPoints.length === 0 ? (
-        <button autoFocus onClick={() => beginStory()}>
-          Begin
-        </button>
-      ) : (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <span style={{ color: "green" }}>
-            WS status: {ReadyState[readyState]}
-          </span>
-          <PlotBoard plotPoints={plotPoints} />
-          {isLoading && <span>Loading...</span>}
-          {latestNarrative && !isLoading && (
-            <PlayerOptions
-              key={latestNarrative.text}
-              options={latestNarrative.options || []}
-              onSelect={addPlotPoint}
-            />
-          )}
-          <div ref={bottomRef}></div>
-        </div>
-      )}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <span style={{ color: "green" }}>
+          WS status: {ReadyState[readyState]}
+        </span>
+        <img
+          src={getImageUrl(theme.imagePath)}
+          alt={theme.description}
+          height="250"
+        />
+        <PlotBoard plotPoints={plotPoints} />
+        {isLoading && <span>Loading...</span>}
+        {latestNarrative && !isLoading && (
+          <PlayerOptions
+            key={latestNarrative.text}
+            options={latestNarrative.options || []}
+            onSelect={addPlotPoint}
+          />
+        )}
+        <div ref={bottomRef}></div>
+      </div>
     </div>
   );
 };
