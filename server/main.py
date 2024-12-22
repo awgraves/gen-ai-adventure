@@ -19,8 +19,8 @@ class WSExtender:
         data = json.loads(rawData)
         return data
 
-    def send_json(self, rawData):
-        data = json.dumps(rawData)
+    def send_json(self, raw_data):
+        data = json.dumps(raw_data)
         self.ws.send(data)
 
 

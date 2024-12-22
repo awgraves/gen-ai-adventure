@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { UserInput } from "./UserInput";
+import { useEffect, useRef, useState } from "react";
+import { PlayerOptions } from "./PlayerOptions";
 import { PlotPoint } from "./types";
 import { PlotBoard } from "./PlotBoard";
 import useWebsocket, { ReadyState } from "react-use-websocket";
@@ -13,6 +13,7 @@ export const Story: React.FC = () => {
   const { sendJsonMessage, lastJsonMessage, readyState } = useWebsocket(
     "ws://" + SERVER_URL + "/story"
   );
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   const addPlotPoint = (str: string) => {
     const point = { text: str };
@@ -24,14 +25,29 @@ export const Story: React.FC = () => {
     sendJsonMessage({ theme: "aliens" });
   };
 
+  const regenerateLastResponse = () => {
+    sendJsonMessage({ regenerate: true });
+  };
+
+  const scrollToBottom = () => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   useEffect(() => {
     if (lastJsonMessage !== null) {
-      setPlotPoints([...plotPoints, lastJsonMessage]);
-      if ("debug" in lastJsonMessage) {
-        console.log(lastJsonMessage["debug"]);
+      if ("error" in lastJsonMessage) {
+        console.error(lastJsonMessage.error);
+        return;
+      }
+      if ("text" in lastJsonMessage) {
+        setPlotPoints([...plotPoints, lastJsonMessage]);
       }
     }
   }, [lastJsonMessage]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [plotPoints]);
 
   return (
     <div className={styles.story}>
@@ -51,7 +67,13 @@ export const Story: React.FC = () => {
             WS status: {ReadyState[readyState]}
           </span>
           <PlotBoard plotPoints={plotPoints} />
-          <UserInput onSubmit={addPlotPoint} />
+          {plotPoints[plotPoints.length - 1].options?.length && (
+            <PlayerOptions
+              options={plotPoints[plotPoints.length - 1].options || []}
+              onSelect={addPlotPoint}
+            />
+          )}
+          <div ref={bottomRef}></div>
         </div>
       )}
     </div>

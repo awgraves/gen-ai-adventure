@@ -1,15 +1,15 @@
 import { useState } from "react";
 
-export const PlayerChoices: React.FC<{
+export const PlayerOptions: React.FC<{
   options: string[];
-  onSubmit: (choice: string) => void;
-}> = ({ options, onSubmit }) => {
+  onSelect: (choice: string) => void;
+}> = ({ options, onSelect }) => {
   const [choice, selectedChoice] = useState<null | string>(null);
 
   const onClick = (choice: string) => {
     if (choice !== null) {
       selectedChoice(choice);
-      onSubmit(choice);
+      onSelect(choice);
     }
   };
 
