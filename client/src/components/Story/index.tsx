@@ -63,6 +63,20 @@ export const Story: React.FC<{
     scrollToBottom();
   }, [plotPoints]);
 
+  const getConnStyle = (readyState: ReadyState) => {
+    switch (readyState) {
+      case ReadyState.CONNECTING:
+        return { backgroundColor: "yellow" };
+      case ReadyState.OPEN:
+        return { backgroundColor: "green" };
+      case ReadyState.CLOSING:
+      case ReadyState.CLOSED:
+        return { backgroundColor: "red" };
+      default:
+        return { backgroundColor: "black" };
+    }
+  };
+
   return (
     <div className={styles.story}>
       <div
@@ -72,9 +86,14 @@ export const Story: React.FC<{
           alignItems: "center",
         }}
       >
-        <span style={{ color: "green" }}>
-          WS status: {ReadyState[readyState]}
-        </span>
+        <div className={styles.connContainer}>
+          <span>Connection: </span>
+          <div
+            id="foo"
+            className={styles.connIndicator}
+            style={getConnStyle(readyState)}
+          />
+        </div>
         <img
           src={getImageUrl(theme.imagePath)}
           alt={theme.description}

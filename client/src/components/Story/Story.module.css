@@ -3,3 +3,20 @@
   flex-direction: column;
   align-items: center;
 }
+
+.connContainer {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10pt;
+}
+
+.connIndicator {
+  margin-left: 0.5em;
+  border-radius: 50%;
+  height: 1em;
+  width: 1em;
+}
