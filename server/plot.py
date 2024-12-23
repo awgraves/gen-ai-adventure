@@ -12,12 +12,16 @@ PIRATE = "a pirate named Captain Morgan who is seeking a lost treasure"
 
 ASTRONAUT = "an astronaut named Major Tom who is seeking a rare mineral on an alien planet"
 
+COWBOY = "a cowboy named Billy the Kid who is seeking a lost gold mine"
+
 
 def get_person_for_theme(theme):
     if theme == "pirate":
         return PIRATE
     elif theme == "astronaut":
         return ASTRONAUT
+    elif theme == "cowboy":
+        return COWBOY
     else:
         return PIRATE
 
@@ -33,12 +37,14 @@ The player will respond with 1 of those choices at a time to continue the story.
 
 Here are some rules to follow:
 1. The player is {person}.
-2. Start setting the scene and greeting the player by their name. Ask them to choose an appropriately themed weapon.
-3. Each narrative turn should only be a few sentences long.
-4. Have a few narrative paths that lead to success.
-5. Have a few narrative paths that lead to death.
-6. At the end of the story include the text "THE END."
-7. Do NOT include numbering in the options - just the text of the option.
+2. Start by greeting the player by name and explaining their goal. Ask them to choose an appropriately themed weapon.
+3. Throughout the story, the player can only use the weapon they chose at the beginning. If they lose this weapon, they are unarmed.
+4. Each step in the story should only be a few sentences long.
+5. Most of the narrative paths should end in the player's death.
+6. Only clever decisions made by the player should lead to the story ending in success.
+7. The whole story should only be about 5 steps. 
+8. At the end of the story include the text "THE END."
+9. Do NOT include numbering in the options - just the text of the option.
 """
 
 

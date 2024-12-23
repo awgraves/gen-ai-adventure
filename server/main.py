@@ -41,7 +41,12 @@ def themes():
             "value": "astronaut",
             "imagePath": "/static/astronaut.webp"
             },
-            ]
+            {
+                "description": "Play as Billy the Kid, a cowboy seeking a lost gold mine.",
+                "value": "cowboy",
+                "imagePath": "/static/cowboy.webp"
+    }
+    ]
 
 
 @sock.route("/story")
