@@ -14,6 +14,8 @@ ASTRONAUT = "an astronaut named Major Tom who is seeking a rare mineral on an al
 
 COWBOY = "a cowboy named Billy the Kid who is seeking a lost gold mine"
 
+SCUBA = "a scuba diver named Jacques Cousteau who is seeking the lost city of Atlantis"
+
 
 def get_person_for_theme(theme):
     if theme == "pirate":
@@ -22,6 +24,8 @@ def get_person_for_theme(theme):
         return ASTRONAUT
     elif theme == "cowboy":
         return COWBOY
+    elif theme == "scuba":
+        return SCUBA
     else:
         return PIRATE
 

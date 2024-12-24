@@ -45,6 +45,11 @@ def themes():
                 "description": "Play as Billy the Kid, a cowboy seeking a lost gold mine.",
                 "value": "cowboy",
                 "imagePath": "/static/cowboy.webp"
+    },
+        {
+                "description": "Play as Jacques Cousteau, a scuba diver seeking the lost city of Atlantis.",
+                "value": "scuba",
+                "imagePath": "/static/scuba.webp"
     }
     ]
 
