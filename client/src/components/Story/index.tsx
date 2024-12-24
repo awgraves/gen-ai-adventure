@@ -23,7 +23,12 @@ export const Story: React.FC<{
 
   const addPlotPoint = (str: string) => {
     const point: PlotPoint = { text: str, type: "CHOICE" };
-    setPlotPoints([...plotPoints, point]);
+    setPlotPoints([
+      ...plotPoints,
+      ...(latestNarrative ? [latestNarrative] : []),
+      point,
+    ]);
+    setLatestNarrative(null);
     setIsLoading(true);
     sendJsonMessage(point);
   };
@@ -52,7 +57,6 @@ export const Story: React.FC<{
       }
       if ("text" in lastJsonMessage) {
         const newNarrative = { type: "NARRATIVE", ...lastJsonMessage };
-        setPlotPoints([...plotPoints, newNarrative]);
         setLatestNarrative(newNarrative);
         setIsLoading(false);
       }
@@ -99,9 +103,9 @@ export const Story: React.FC<{
           alt={theme.description}
           height="250"
         />
-        <PlotBoard plotPoints={plotPoints} />
+        <PlotBoard plotPoints={plotPoints} latestNarrative={latestNarrative} />
         {isLoading && <span>Loading...</span>}
-        {latestNarrative && !isLoading && (
+        {latestNarrative && (
           <PlayerOptions
             key={latestNarrative.text}
             options={latestNarrative.options || []}

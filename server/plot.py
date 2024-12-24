@@ -5,8 +5,8 @@ from typing_extensions import Annotated, TypedDict
 
 # OPENAI_API_KEY set via ENV
 MODEL = "gpt-4o-mini"
-MAX_RETRIES = 5
-TIMEOUT = 15
+MAX_RETRIES = 1
+TIMEOUT = 5
 
 PIRATE = "a pirate named Captain Morgan who is seeking a lost treasure"
 
@@ -58,41 +58,56 @@ class PlotData(TypedDict):
                        ...,
                        "The options for the player to choose from. If end of story, use 'THE END.' do not include any question marks or numbers in the options"]
 
-# TODO: try prompting for a 1 sentence summary of each turn and storing those in the history
-# rather than the full text
-
 
 class Plot:
-    def __init__(self, theme="pirate"):
+    def __init__(self, ws_conn, theme="pirate"):
+        self.ws_conn = ws_conn
+
+        self.protagonist = get_person_for_theme(theme)
         self.model = ChatOpenAI(
             model=MODEL, max_retries=MAX_RETRIES, timeout=TIMEOUT)
         self.system_message = system_template
-        self.protagonist = get_person_for_theme(theme)
+
+        self.call_count = 0
         self.chat_history: list[BaseMessage] = []
 
+    def _test_print(self):
+        chunks = []
+        tmp_template = ChatPromptTemplate.from_messages(
+            [("human", "what color is the ocean?")])
+
+        class TestOutput(TypedDict):
+            text: Annotated[str, ..., "The text of the response"]
+
+        chain = tmp_template | self.model.with_structured_output(
+            TestOutput, method="json_schema")
+        for chunk in chain.stream({}):
+            chunks.append(chunk)
+            print(chunk, end="|", flush=True)
+
     def _call_model(self):
-        print("Calling model")
         # oddly, using SystemMessage class breaks the string interpolation
         # using the tuple instead
+        self.call_count += 1
+        print(f"{self.call_count} CALL", flush=True)
         prompt_template = ChatPromptTemplate.from_messages(
             [("system", self.system_message)] + self.chat_history)
 
-        chain = prompt_template | self.model.with_structured_output(
-            PlotData, method="json_schema")
+        chain = (prompt_template | self.model.with_structured_output(
+            PlotData, method="json_schema"))
 
-        answer = chain.invoke({"person": self.protagonist})
+        final = PlotData(text="", options=["THE END."])
+        for chunk in chain.stream({"person": self.protagonist}):
+            # print(chunk, flush=True)
+            self.ws_conn.send_json(chunk)
+            final = chunk
 
-        self.chat_history.append(AIMessage(answer.get("text", "")))
-
-        return answer
+        self.chat_history.append(AIMessage(final.get("text", "")))
 
     def begin(self):
-        answer = self._call_model()
-        return answer
+        self._call_model()
 
     def advance(self, data):
         human_input = data.get("text")
         self.chat_history.append(HumanMessage(human_input))
-
-        answer = self._call_model()
-        return answer
+        self._call_model()

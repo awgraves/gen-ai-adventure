@@ -57,18 +57,20 @@ def themes():
 @sock.route("/story")
 def story(raw_ws):
     ws = WSExtender(raw_ws)
-    plot = Plot()
+    plot = Plot(ws_conn=ws)
 
     while True:
         data = ws.receive_json()
         # if theme is set, create a new plot
         if "theme" in data:
-            plot = Plot(theme=data.get("theme"))
-            ws.send_json(plot.begin())
+            plot = Plot(ws_conn=ws, theme=data.get("theme"))
+            plot.begin()
+            # ws.send_json(plot.begin())
             continue
         elif "text" in data:
-            next_point = plot.advance(data)
-            ws.send_json(next_point)
+            plot.advance(data)
+            # next_point = plot.advance(data)
+            # ws.send_json(next_point)
         else:
             break
 
