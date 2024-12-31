@@ -4,14 +4,27 @@
   align-items: center;
 }
 
-.connContainer {
+.topBar {
   position: fixed;
-  top: 20px;
-  left: 20px;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 3em;
+  padding: 0.5em;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 10pt;
+  background-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1),
+    rgba(0, 0, 0, 0.35)
+  );
+}
+
+.topBar button {
+  position: fixed;
+  right: 1em;
 }
 
 .connIndicator {
@@ -19,4 +32,15 @@
   border-radius: 50%;
   height: 1em;
   width: 1em;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingContainer button {
+  margin-top: 0.5em;
 }

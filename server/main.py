@@ -71,6 +71,8 @@ def story(raw_ws):
             plot.advance(data)
             # next_point = plot.advance(data)
             # ws.send_json(next_point)
+        elif "poke" in data:
+            plot.poke()
         else:
             break
 

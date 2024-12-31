@@ -5,7 +5,7 @@ from typing_extensions import Annotated, TypedDict
 
 # OPENAI_API_KEY set via ENV
 MODEL = "gpt-4o-mini"
-MAX_RETRIES = 1
+MAX_RETRIES = 3
 TIMEOUT = 5
 
 PIRATE = "a pirate named Captain Morgan who is seeking a lost treasure"
@@ -88,8 +88,6 @@ class Plot:
     def _call_model(self):
         # oddly, using SystemMessage class breaks the string interpolation
         # using the tuple instead
-        self.call_count += 1
-        print(f"{self.call_count} CALL", flush=True)
         prompt_template = ChatPromptTemplate.from_messages(
             [("system", self.system_message)] + self.chat_history)
 
@@ -97,8 +95,15 @@ class Plot:
             PlotData, method="json_schema"))
 
         final = PlotData(text="", options=["THE END."])
+
+        self.call_count += 1
+        print(f"{self.call_count} CALL", flush=True)
+
+        print(prompt_template.invoke(
+            {"person": self.protagonist}).to_string(), flush=True)
+
         for chunk in chain.stream({"person": self.protagonist}):
-            # print(chunk, flush=True)
+            print(chunk, flush=True)
             self.ws_conn.send_json(chunk)
             final = chunk
 
@@ -110,4 +115,8 @@ class Plot:
     def advance(self, data):
         human_input = data.get("text")
         self.chat_history.append(HumanMessage(human_input))
+        self._call_model()
+
+    def poke(self):
+        print("Poking the model", flush=True)
         self._call_model()

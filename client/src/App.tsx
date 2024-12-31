@@ -9,6 +9,10 @@ function App() {
   const [themeOptions, setThemeOptions] = useState<ThemeOption[]>([]);
   const [theme, setTheme] = useState<ThemeOption | null>(null);
 
+  const resetTheme = () => {
+    setTheme(null);
+  };
+
   useEffect(() => {
     fetch(THEMES_URL)
       .then((res) => res.json())
@@ -21,7 +25,7 @@ function App() {
     <>
       <h1>Gen AI Adventure</h1>
       {theme ? (
-        <Story theme={theme} />
+        <Story theme={theme} resetTheme={resetTheme} />
       ) : (
         <ThemeSelection
           options={themeOptions}

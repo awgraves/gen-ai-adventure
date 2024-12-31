@@ -9,7 +9,8 @@ import { ThemeOption } from "../../types";
 
 export const Story: React.FC<{
   theme: ThemeOption;
-}> = ({ theme }) => {
+  resetTheme: () => void;
+}> = ({ theme, resetTheme }) => {
   const [plotPoints, setPlotPoints] = useState<PlotPoint[]>([]);
   const [latestNarrative, setLatestNarrative] = useState<PlotPoint | null>(
     null
@@ -31,6 +32,10 @@ export const Story: React.FC<{
     setLatestNarrative(null);
     setIsLoading(true);
     sendJsonMessage(point);
+  };
+
+  const pokeServer = () => {
+    sendJsonMessage({ poke: true });
   };
 
   const beginStory = () => {
@@ -90,13 +95,14 @@ export const Story: React.FC<{
           alignItems: "center",
         }}
       >
-        <div className={styles.connContainer}>
+        <div className={styles.topBar}>
           <span>Connection: </span>
           <div
             id="foo"
             className={styles.connIndicator}
             style={getConnStyle(readyState)}
           />
+          <button onClick={() => resetTheme()}>Back to Themes</button>
         </div>
         <img
           src={getImageUrl(theme.imagePath)}
@@ -104,7 +110,12 @@ export const Story: React.FC<{
           height="250"
         />
         <PlotBoard plotPoints={plotPoints} latestNarrative={latestNarrative} />
-        {isLoading && <span>Loading...</span>}
+        {isLoading && (
+          <div className={styles.loadingContainer}>
+            <span>Loading...</span>
+            <button onClick={() => pokeServer()}>Poke Server</button>
+          </div>
+        )}
         {latestNarrative && (
           <PlayerOptions
             key={latestNarrative.text}
