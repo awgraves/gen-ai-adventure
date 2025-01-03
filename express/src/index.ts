@@ -1,10 +1,16 @@
 import express, { Request, Response } from "express";
+import { themes } from "./themes";
 
 const app = express();
 const port = process.env.PORT || 9999;
+app.use("/static", express.static("public"));
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Express + TypeScript Serversss");
+app.get("/status", (_: Request, res: Response) => {
+  res.json({ status: "ok" });
+});
+
+app.get("/themes", (_: Request, res: Response) => {
+  res.json(themes);
 });
 
 app.listen(port, () => {
