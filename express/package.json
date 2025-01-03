@@ -11,11 +11,16 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "express": "^4.21.2"
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "express-ws": "^5.0.2"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
+    "@types/express-ws": "^3.0.5",
     "@types/node": "^22.10.5",
+    "@types/ws": "^8.5.13",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2"
