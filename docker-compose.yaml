@@ -15,3 +15,10 @@ services:
     volumes:
       - ./client:/app
       - /app/node_modules
+  express:
+    build: ./express
+    ports:
+      - 9999:9999
+    volumes:
+      - ./express:/app
+      - /app/node_modules
