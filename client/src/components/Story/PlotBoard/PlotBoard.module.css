@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   margin: 0;
   padding: 0;
   max-width: 850px;
@@ -12,10 +13,29 @@
   margin: 0.25em;
 }
 
-.illustration {
+.image {
   height: 400px;
   width: 400px;
-  background-color: #f0f0f0;
+  margin: auto;
+  display: block;
+  border-radius: 10px;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    background-color: #646cffaa;
+  }
+  50% {
+    background-color: #282b66;
+  }
+}
+
+.imagePlaceholder {
+  height: 400px;
+  width: 400px;
+  border-radius: 10px;
+  animation: pulse 2s infinite;
   margin: auto;
 }
 

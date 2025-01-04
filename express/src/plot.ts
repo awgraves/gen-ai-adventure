@@ -1,8 +1,8 @@
-import { ChatOpenAI } from "@langchain/openai";
-import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { ChatOpenAI, DallEAPIWrapper } from "@langchain/openai";
+import { ChatPromptTemplate, PromptTemplate } from "@langchain/core/prompts";
 import { getProtagonist } from "./themes";
 import { WebSocket } from "ws";
-import { systemTemplate } from "./systemTemplate";
+import { imagePromptTemplate, systemTemplate } from "./systemTemplate";
 import { z } from "zod";
 import { AIMessage, BaseMessage, HumanMessage } from "@langchain/core/messages";
 
@@ -58,6 +58,29 @@ export const createNewPlot = (ws: WebSocket, theme: string): Plot => {
     }
     if (final) {
       chatHistory.push(new AIMessage(final.text));
+
+      // skip the first image
+      if (chatHistory.length <= 2) {
+        return;
+      }
+
+      const dallE = new DallEAPIWrapper({
+        size: "1024x1024",
+      });
+
+      const imgPrompt = new PromptTemplate({
+        inputVariables: ["person", "scene"],
+        template: imagePromptTemplate,
+      });
+
+      const imgStr = await imgPrompt.invoke({
+        person: protagonist,
+        scene: final.text,
+      });
+
+      const imageUrl = await dallE.invoke(imgStr.toString());
+
+      ws.send(JSON.stringify({ ...final, imageUrl }));
     }
   };
 

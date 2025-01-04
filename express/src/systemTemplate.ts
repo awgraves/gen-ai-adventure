@@ -16,3 +16,16 @@ Here are some rules to follow:
 7. The whole story should only be about 5 steps. 
 8. At the end of the story include the text "THE END."
 9. Do NOT include numbering in the options - just the text of the option.`;
+
+export const imagePromptTemplate = `
+Generate an image of the scene described below in between three #.
+
+Here are some rules:
+1. The 'you' referenced in the text is {person}. ALWAYS show the scene as seen through the eyes of {person}.
+2. Do NOT include any text in the image of the narration.
+3. Use a realistic style for the image.
+
+###
+{scene}
+###
+`;

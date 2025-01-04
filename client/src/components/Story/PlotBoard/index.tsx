@@ -15,12 +15,30 @@ export const PlotBoard: React.FC<{
             point.type === "CHOICE" ? styles.plotChoice : ""
           }`}
         >
+          {point.imageUrl && (
+            <div style={{ margin: "auto" }}>
+              <img src={point.imageUrl} className={styles.image} />
+            </div>
+          )}
           <ReactMarkdown>{point.text}</ReactMarkdown>
         </li>
       ))}
       {latestNarrative && (
         <li className={styles.plotPoint}>
-          <div className={styles.illustration} />
+          {!latestNarrative.imageUrl ? (
+            <div
+              className={styles.imagePlaceholder}
+              style={{ display: plotPoints.length >= 2 ? "block" : "none" }}
+            />
+          ) : (
+            <div
+              style={{
+                margin: "auto",
+              }}
+            >
+              <img src={latestNarrative.imageUrl} className={styles.image} />
+            </div>
+          )}
           <ReactMarkdown>{latestNarrative.text}</ReactMarkdown>
         </li>
       )}
