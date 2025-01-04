@@ -18,6 +18,11 @@ const outputSchema = z.object({
     .describe(
       "The options for the player to choose from. If at the end of the story, return an empty array. Do not include any question marks or numbers in the options."
     ),
+  status: z
+    .enum(["IN_PROGRESS", "SUCCESS", "FAILURE"])
+    .describe(
+      "Whether the story is still in progress, ended in succes, or ended in failure."
+    ),
 });
 
 export const createNewPlot = (ws: WebSocket, theme: string): Plot => {
@@ -28,7 +33,7 @@ export const createNewPlot = (ws: WebSocket, theme: string): Plot => {
   });
   const chatHistory: BaseMessage[] = [];
 
-  const generateNextMessage = async () => {
+  const generateNextPlotPoint = async () => {
     const promptTemplate = ChatPromptTemplate.fromMessages([
       ["system", systemTemplate],
       ...chatHistory,
@@ -42,7 +47,11 @@ export const createNewPlot = (ws: WebSocket, theme: string): Plot => {
 
     const stream = await chain.stream({ person: protagonist });
 
-    let final: z.infer<typeof outputSchema> = { text: "", options: [] };
+    let final: z.infer<typeof outputSchema> = {
+      text: "",
+      options: [],
+      status: "IN_PROGRESS",
+    };
     for await (const chunk of stream) {
       final = chunk as z.infer<typeof outputSchema>;
       ws.send(JSON.stringify(chunk));
@@ -53,12 +62,12 @@ export const createNewPlot = (ws: WebSocket, theme: string): Plot => {
   };
 
   const begin = async () => {
-    await generateNextMessage();
+    await generateNextPlotPoint();
   };
 
   const advance = async (userChoice: string) => {
     chatHistory.push(new HumanMessage(userChoice));
-    await generateNextMessage();
+    await generateNextPlotPoint();
   };
 
   return {

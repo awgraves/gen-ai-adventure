@@ -12,6 +12,13 @@
   margin: 0.25em;
 }
 
+.illustration {
+  height: 400px;
+  width: 400px;
+  background-color: #f0f0f0;
+  margin: auto;
+}
+
 .plotChoice {
   font-weight: bold;
   color: #b1b5ff;

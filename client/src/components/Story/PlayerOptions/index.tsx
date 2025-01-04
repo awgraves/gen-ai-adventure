@@ -1,10 +1,14 @@
 import { useState } from "react";
 import styles from "./PlayerOptions.module.css";
+import { PlotPoint } from "../types";
 
 export const PlayerOptions: React.FC<{
-  options: string[];
+  latestNarrative: PlotPoint;
   onSelect: (choice: string) => void;
-}> = ({ options, onSelect }) => {
+}> = ({ onSelect, latestNarrative }) => {
+  const { status } = latestNarrative;
+  const options = latestNarrative.options || [];
+
   const [choice, selectedChoice] = useState<null | string>(null);
 
   const onClick = (choice: string) => {
@@ -12,6 +16,12 @@ export const PlayerOptions: React.FC<{
       selectedChoice(choice);
       onSelect(choice);
     }
+  };
+
+  const showFinalMessage = status !== undefined && status !== "IN_PROGRESS";
+
+  const getFinalMessage = () => {
+    return status === "SUCCESS" ? "YOU WIN" : "YOU LOSE";
   };
 
   return (
@@ -26,6 +36,7 @@ export const PlayerOptions: React.FC<{
           {option}
         </button>
       ))}
+      {showFinalMessage && <div>{getFinalMessage()}</div>}
     </div>
   );
 };

@@ -15,7 +15,6 @@ export const Story: React.FC<{
   const [latestNarrative, setLatestNarrative] = useState<PlotPoint | null>(
     null
   );
-  const [isLoading, setIsLoading] = useState(false);
   const hasInitialFetch = useRef(false);
 
   const { sendJsonMessage, lastJsonMessage, readyState } =
@@ -30,16 +29,10 @@ export const Story: React.FC<{
       point,
     ]);
     setLatestNarrative(null);
-    setIsLoading(true);
     sendJsonMessage(point);
   };
 
-  const pokeServer = () => {
-    sendJsonMessage({ poke: true });
-  };
-
   const beginStory = () => {
-    setIsLoading(true);
     sendJsonMessage({ theme: theme.value });
   };
 
@@ -63,7 +56,6 @@ export const Story: React.FC<{
       if ("text" in lastJsonMessage) {
         const newNarrative = { type: "NARRATIVE", ...lastJsonMessage };
         setLatestNarrative(newNarrative);
-        setIsLoading(false);
       }
     }
   }, [lastJsonMessage]);
@@ -110,17 +102,15 @@ export const Story: React.FC<{
           height="250"
         />
         <PlotBoard plotPoints={plotPoints} latestNarrative={latestNarrative} />
-        {isLoading && (
+        {!latestNarrative ? (
           <div className={styles.loadingContainer}>
             <span>Loading...</span>
-            <button onClick={() => pokeServer()}>Poke Server</button>
           </div>
-        )}
-        {latestNarrative && (
+        ) : (
           <PlayerOptions
             key={latestNarrative.text}
-            options={latestNarrative.options || []}
             onSelect={addPlotPoint}
+            latestNarrative={latestNarrative}
           />
         )}
         <div ref={bottomRef}></div>

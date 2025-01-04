@@ -20,6 +20,7 @@ export const PlotBoard: React.FC<{
       ))}
       {latestNarrative && (
         <li className={styles.plotPoint}>
+          <div className={styles.illustration} />
           <ReactMarkdown>{latestNarrative.text}</ReactMarkdown>
         </li>
       )}
