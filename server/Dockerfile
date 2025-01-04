@@ -1,10 +1,11 @@
-FROM python:3.10-alpine
+FROM node:alpine3.20
 
 WORKDIR /app
 
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY package*.json ./
 
-EXPOSE 8080
+RUN npm install
 
-CMD ["python", "./main.py"]
+EXPOSE 9999
+
+CMD ["npm", "run", "dev"]
