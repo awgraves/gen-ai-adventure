@@ -6,7 +6,12 @@ import { imagePromptTemplate, systemTemplate } from "./systemTemplate";
 import { z } from "zod";
 import { AIMessage, BaseMessage, HumanMessage } from "@langchain/core/messages";
 
+interface PlotOptions {
+  includeImages?: boolean;
+}
+
 interface Plot {
+  setOptions: (options: PlotOptions) => void;
   begin: () => Promise<void>;
   advance: (userChoice: string) => Promise<void>;
 }
@@ -25,13 +30,65 @@ const outputSchema = z.object({
     ),
 });
 
-export const createNewPlot = (ws: WebSocket, theme: string): Plot => {
+export const generateNextPlotPointStream = async (
+  theme: string,
+  previousMessages: BaseMessage[]
+) => {
+  const protagonist = getProtagonist(theme);
+
+  const llm = new ChatOpenAI({
+    model: "gpt-4o-mini",
+    temperature: 0.5,
+  });
+  const promptTemplate = ChatPromptTemplate.fromMessages([
+    ["system", systemTemplate],
+    ...previousMessages,
+  ]);
+
+  const llmWithSchema = llm.withStructuredOutput(outputSchema, {
+    method: "json_schema",
+  });
+
+  const chain = promptTemplate.pipe(llmWithSchema);
+
+  const stream = await chain.stream({ person: protagonist });
+
+  return stream;
+};
+
+export const createNewPlot = (
+  ws: WebSocket,
+  theme: string,
+  options?: PlotOptions
+): Plot => {
+  let plotOptions = options || { includeImages: false };
   const protagonist = getProtagonist(theme);
   const llm = new ChatOpenAI({
     model: "gpt-4o-mini",
     temperature: 0.5,
   });
   const chatHistory: BaseMessage[] = [];
+
+  const generateImageForCurrentPlotPoint = async () => {
+    const lastPlotPoint = chatHistory[chatHistory.length - 1];
+    const dallE = new DallEAPIWrapper({
+      size: "1024x1024",
+    });
+
+    const imgPrompt = new PromptTemplate({
+      inputVariables: ["person", "scene"],
+      template: imagePromptTemplate,
+    });
+
+    const imgStr = await imgPrompt.invoke({
+      person: protagonist,
+      scene: lastPlotPoint.content,
+    });
+
+    const imageUrl = await dallE.invoke(imgStr.toString());
+
+    return imageUrl;
+  };
 
   const generateNextPlotPoint = async () => {
     const promptTemplate = ChatPromptTemplate.fromMessages([
@@ -59,29 +116,16 @@ export const createNewPlot = (ws: WebSocket, theme: string): Plot => {
     if (final) {
       chatHistory.push(new AIMessage(final.text));
 
-      // skip the first image
-      if (chatHistory.length <= 2) {
-        return;
+      // image generation
+      if (chatHistory.length >= 2 && plotOptions.includeImages) {
+        const imageUrl = await generateImageForCurrentPlotPoint();
+        ws.send(JSON.stringify({ ...final, imageUrl }));
       }
-
-      const dallE = new DallEAPIWrapper({
-        size: "1024x1024",
-      });
-
-      const imgPrompt = new PromptTemplate({
-        inputVariables: ["person", "scene"],
-        template: imagePromptTemplate,
-      });
-
-      const imgStr = await imgPrompt.invoke({
-        person: protagonist,
-        scene: final.text,
-      });
-
-      const imageUrl = await dallE.invoke(imgStr.toString());
-
-      ws.send(JSON.stringify({ ...final, imageUrl }));
     }
+  };
+
+  const setOptions = (options: PlotOptions) => {
+    plotOptions = { ...plotOptions, ...options };
   };
 
   const begin = async () => {
@@ -94,6 +138,7 @@ export const createNewPlot = (ws: WebSocket, theme: string): Plot => {
   };
 
   return {
+    setOptions,
     begin,
     advance,
   };
