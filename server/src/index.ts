@@ -27,40 +27,16 @@ app.get("/themes", (_: Request, res: Response) => {
 });
 
 app.get("/speech", async (req: Request, res: Response) => {
-  const speechRequest = z.object({
-    text: z.string(),
-  });
+  //const speechRequest = z.object({
+  //  text: z.string(),
+  //});
   try {
     const text = req.query.text as string;
     if (!text) {
       res.status(400).json({ error: "No text provided" });
     }
-    // const params = speechRequest.parse(req.body);
-    //
-    const buff = await generateSpeechStream(text);
-    res.send(buff);
-    // stream.pipeTo(res);
-    //res.send(stream);
-    //res.writeHead(200, {
-    //  "Content-Type": "audio/mpeg",
-    //  "Transfer-Encoding": "chunked",
-    //  connection: "keep-alive",
-    //});
-    //res.end();
-    //const reader = stream.getReader();
-    //while (true) {
-    //  const { value, done } = await reader.read();
-    //  if (done) {
-    //    break;
-    //  }
-    //  res.write(value);
-    //}
-    //res.end();
-
-    //stream.pipe(res);
-    //stream.on("end", () => {
-    //  res.end();
-    //});
+    const stream = await generateSpeechStream(text);
+    stream.pipe(res);
   } catch (e) {
     if (e instanceof z.ZodError) {
       res.status(400).json({ error: e.issues });
