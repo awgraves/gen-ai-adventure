@@ -4,7 +4,7 @@ import { PlotPoint } from "./types";
 import { PlotBoard } from "./PlotBoard";
 import useWebsocket, { ReadyState } from "react-use-websocket";
 import styles from "./Story.module.css";
-import { getImageUrl, STORY_WS_URL } from "../../const";
+import { getImageUrl, STORY_WS_URL, SPEECH_URL } from "../../const";
 import { ThemeOption } from "../../types";
 //const fetchNextPlotPoint = () => {
 //  // sendJsonMessage({ theme: theme.value });
@@ -63,6 +63,7 @@ export const Story: React.FC<{
     STORY_WS_URL + "/" + theme.value
   );
   const bottomRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const addPlotPoint = (str: string) => {
     const point: PlotPoint = { text: str, type: "CHOICE" };
@@ -90,6 +91,16 @@ export const Story: React.FC<{
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const showPlayButton = false;
+  const playAudio = () => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.src = SPEECH_URL + "?text=" + (latestNarrative?.text || "");
+      audio.load();
+      audio.play();
+    }
+  };
+
   useEffect(() => {
     if (lastJsonMessage !== null) {
       if ("error" in lastJsonMessage) {
@@ -99,6 +110,9 @@ export const Story: React.FC<{
       if ("text" in lastJsonMessage) {
         const newNarrative = { type: "NARRATIVE", ...lastJsonMessage };
         setLatestNarrative(newNarrative);
+      }
+      if ("messageFinished" in lastJsonMessage) {
+        playAudio();
       }
     }
   }, [lastJsonMessage]);
@@ -157,6 +171,16 @@ export const Story: React.FC<{
           />
         )}
         <div ref={bottomRef}></div>
+        <audio ref={audioRef} crossOrigin="anonymous"></audio>
+        {showPlayButton && (
+          <button
+            onClick={() => {
+              playAudio();
+            }}
+          >
+            PLAY
+          </button>
+        )}
       </div>
     </div>
   );

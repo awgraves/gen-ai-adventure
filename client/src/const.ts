@@ -6,6 +6,8 @@ export const STORY_WS_URL = `ws://${SERVER_URL}/story`;
 
 export const THEMES_URL = `http://${SERVER_URL}/themes`;
 
+export const SPEECH_URL = `http://${SERVER_URL}/speech`;
+
 export const getImageUrl = (imagePath: string) => {
   return `http://${SERVER_URL}${imagePath}`;
 };

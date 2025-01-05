@@ -116,6 +116,8 @@ export const createNewPlot = (
     if (final) {
       chatHistory.push(new AIMessage(final.text));
 
+      ws.send(JSON.stringify({ messageFinished: true }));
+
       // image generation
       if (chatHistory.length >= 2 && plotOptions.includeImages) {
         const imageUrl = await generateImageForCurrentPlotPoint();

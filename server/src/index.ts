@@ -7,6 +7,7 @@ import { createNewPlot, generateNextPlotPointStream } from "./plot";
 import { z } from "zod";
 import { AIMessage } from "@langchain/core/messages";
 import { HumanMessage } from "@langchain/core/messages";
+import { generateSpeechStream } from "./speech";
 
 const expWs = expressWs(express());
 const app = expWs.app;
@@ -23,6 +24,51 @@ app.get("/status", (_: Request, res: Response) => {
 
 app.get("/themes", (_: Request, res: Response) => {
   res.json(themes);
+});
+
+app.get("/speech", async (req: Request, res: Response) => {
+  const speechRequest = z.object({
+    text: z.string(),
+  });
+  try {
+    const text = req.query.text as string;
+    if (!text) {
+      res.status(400).json({ error: "No text provided" });
+    }
+    // const params = speechRequest.parse(req.body);
+    //
+    const buff = await generateSpeechStream(text);
+    res.send(buff);
+    // stream.pipeTo(res);
+    //res.send(stream);
+    //res.writeHead(200, {
+    //  "Content-Type": "audio/mpeg",
+    //  "Transfer-Encoding": "chunked",
+    //  connection: "keep-alive",
+    //});
+    //res.end();
+    //const reader = stream.getReader();
+    //while (true) {
+    //  const { value, done } = await reader.read();
+    //  if (done) {
+    //    break;
+    //  }
+    //  res.write(value);
+    //}
+    //res.end();
+
+    //stream.pipe(res);
+    //stream.on("end", () => {
+    //  res.end();
+    //});
+  } catch (e) {
+    if (e instanceof z.ZodError) {
+      res.status(400).json({ error: e.issues });
+      return;
+    }
+    console.log("ERROR", e);
+    res.status(500).json({ error: e });
+  }
 });
 
 app.post("/plot", async (req: Request, res: Response) => {
