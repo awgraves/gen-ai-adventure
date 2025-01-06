@@ -18,7 +18,8 @@ export const PlayerOptions: React.FC<{
     }
   };
 
-  const showFinalMessage = status !== undefined && status !== "IN_PROGRESS";
+  // important to check full end state texts due to streamed response
+  const showFinalMessage = status === "SUCCESS" || status === "FAILURE";
 
   const getFinalMessage = () => {
     return status === "SUCCESS" ? "YOU WIN" : "YOU LOSE";
