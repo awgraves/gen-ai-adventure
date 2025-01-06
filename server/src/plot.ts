@@ -56,7 +56,7 @@ export const generateNextPlotPointStream = async (
   return stream;
 };
 
-export const createNewPlot = (
+export const newPlot = (
   ws: WebSocket,
   theme: string,
   options?: PlotOptions

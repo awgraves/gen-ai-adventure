@@ -6,48 +6,6 @@ import useWebsocket, { ReadyState } from "react-use-websocket";
 import styles from "./Story.module.css";
 import { getImageUrl, STORY_WS_URL, SPEECH_URL } from "../../const";
 import { ThemeOption } from "../../types";
-//const fetchNextPlotPoint = () => {
-//  // sendJsonMessage({ theme: theme.value });
-//  fetch(PLOT_URL, {
-//    method: "POST",
-//    headers: { "Content-Type": "application/json" },
-//    body: JSON.stringify({
-//      theme: theme.value,
-//      previousMessages: plotPoints,
-//    }),
-//  }).then((res) => {
-//    const stream = res.body?.getReader();
-//    if (!stream) {
-//      return;
-//    }
-
-//    const decoder = new TextDecoder();
-//    let buffer = "";
-
-//    const read = async () => {
-//      const { done, value } = await stream.read();
-//      if (done) {
-//        return;
-//      }
-//      buffer += decoder.decode(value);
-
-//      while (true) {
-//        const delimiterIndex = buffer.indexOf("@");
-//        if (delimiterIndex === -1) {
-//          break;
-//        }
-
-//        const message = buffer.slice(0, delimiterIndex);
-//        buffer = buffer.slice(delimiterIndex + 1);
-
-//        const json = JSON.parse(message);
-//        setLatestNarrative({ ...json, type: "NARRATIVE" });
-//      }
-//      read();
-//    };
-//    read();
-//  });
-//};
 
 export const Story: React.FC<{
   theme: ThemeOption;
