@@ -15,6 +15,7 @@ export const Story: React.FC<{
   const [latestNarrative, setLatestNarrative] = useState<PlotPoint | null>(
     null
   );
+  const [includeSpeech, setIncludeSpeech] = useState(false);
   const hasInitialFetch = useRef(false);
 
   const { sendJsonMessage, lastJsonMessage, readyState } = useWebsocket(
@@ -49,7 +50,6 @@ export const Story: React.FC<{
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const showPlayButton = false;
   const playAudio = () => {
     const audio = audioRef.current;
     if (audio) {
@@ -70,10 +70,12 @@ export const Story: React.FC<{
         setLatestNarrative(newNarrative);
       }
       if ("messageFinished" in lastJsonMessage) {
-        playAudio();
+        if (includeSpeech) {
+          playAudio();
+        }
       }
     }
-  }, [lastJsonMessage]);
+  }, [lastJsonMessage, includeSpeech]);
 
   useEffect(() => {
     scrollToBottom();
@@ -95,6 +97,7 @@ export const Story: React.FC<{
 
   return (
     <div className={styles.story}>
+      <audio ref={audioRef} crossOrigin="anonymous"></audio>
       <div
         style={{
           display: "flex",
@@ -105,11 +108,23 @@ export const Story: React.FC<{
         <div className={styles.topBar}>
           <span>Connection: </span>
           <div
-            id="foo"
             className={styles.connIndicator}
             style={getConnStyle(readyState)}
           />
-          <button onClick={() => resetTheme()}>Back to Themes</button>
+          <div className={styles.navOptions}>
+            <div className={styles.switchContainer}>
+              Audio:
+              <label className={styles.switch}>
+                <input
+                  type="checkbox"
+                  checked={includeSpeech}
+                  onChange={() => setIncludeSpeech(!includeSpeech)}
+                />
+                <span className={styles.slider} />
+              </label>
+            </div>
+            <button onClick={() => resetTheme()}>Back to Themes</button>
+          </div>
         </div>
         <img
           src={getImageUrl(theme.imagePath)}
@@ -129,16 +144,6 @@ export const Story: React.FC<{
           />
         )}
         <div ref={bottomRef}></div>
-        <audio ref={audioRef} crossOrigin="anonymous"></audio>
-        {showPlayButton && (
-          <button
-            onClick={() => {
-              playAudio();
-            }}
-          >
-            PLAY
-          </button>
-        )}
       </div>
     </div>
   );
