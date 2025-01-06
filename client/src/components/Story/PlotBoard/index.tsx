@@ -6,6 +6,7 @@ export const PlotBoard: React.FC<{
   plotPoints: PlotPoint[];
   latestNarrative: PlotPoint | null;
 }> = ({ plotPoints, latestNarrative }) => {
+  const showlatestNarrativeImage = false;
   return (
     <ul className={styles.plotPointList}>
       {plotPoints.map((point, idx) => (
@@ -28,7 +29,12 @@ export const PlotBoard: React.FC<{
           {!latestNarrative.imageUrl ? (
             <div
               className={styles.imagePlaceholder}
-              style={{ display: plotPoints.length >= 2 ? "block" : "none" }}
+              style={{
+                display:
+                  plotPoints.length >= 2 && showlatestNarrativeImage
+                    ? "block"
+                    : "none",
+              }}
             />
           ) : (
             <div
