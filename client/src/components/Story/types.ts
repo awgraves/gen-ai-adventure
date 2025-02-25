@@ -3,5 +3,4 @@ export interface PlotPoint {
   type: "NARRATIVE" | "CHOICE";
   options?: string[];
   status?: "IN_PROGRESS" | "SUCCESS" | "FAILURE";
-  imageUrl?: string;
 }

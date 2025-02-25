@@ -93,13 +93,52 @@ const fetchNextPlotPoint = () => {
 };
 ```
 
-In order for the client to properly handle this stream,
-the individual response JSON objects coming from the stream of parsed LLM output needed to be separated by a delimiter, and I went with the `@` symbol since it was unlikely to appear in the JSON objects themselves.
+## Images for each plot point
 
-I did not want to use the newline character `\n` as the delimiter because the JSON objects themselves could contain newlines within the text content.
+I thought it would be nice to have an image for each plot point, so I did try this out and ran into a few issues.
 
-Alternatively, I could have used a payload length prefix for each JSON object which might have been the best (safest) approach, though it would still end up requiring slightly more complex custom parsing on the client side.
+First, it was difficult to get a consistent art style for the images.
 
-If I had been dealing with pure text responses rather than structured JSON, I probably would have gone with the stream response approach because then it would not require any delimiters or custom parsing on the client side.
+Second, due to the sometimes violent nature of the narrative, the AI would refuse to generate an image to represent what was happening.
 
-In the end, the code felt simpler and cleaner with websockets because they already handled the concept of sending/receiving a stream of individual messages.
+So I decided to leave the images out for now and just keep the thumbnails at the top to set the scene.
+
+Here's some example code of what i had:
+
+```typescript
+export const imagePromptTemplate = `
+Generate an image of the scene described below in between three #.
+
+Here are some rules:
+1. The 'you' referenced in the text is {person}. ALWAYS show the scene as seen through the eyes of {person}.
+2. Do NOT include any text in the image of the narration.
+3. Use a realistic style for the image.
+
+###
+{scene}
+###
+`;
+
+// server side, immediately after generating the plot point text and options, would call this function
+// and append the imageURL onto the plot point object
+const generateImageForCurrentPlotPoint = async () => {
+  const lastPlotPoint = chatHistory[chatHistory.length - 1];
+  const dallE = new DallEAPIWrapper({
+    size: "1024x1024",
+  });
+
+  const imgPrompt = new PromptTemplate({
+    inputVariables: ["person", "scene"],
+    template: imagePromptTemplate,
+  });
+
+  const imgStr = await imgPrompt.invoke({
+    person: protagonist,
+    scene: lastPlotPoint.content,
+  });
+
+  const imageUrl = await dallE.invoke(imgStr.toString());
+
+  return imageUrl;
+};
+```
