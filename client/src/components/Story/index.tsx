@@ -39,6 +39,12 @@ export const Story: React.FC<{
     sendJsonMessage({ begin: true });
   };
 
+  const resetStory = () => {
+    setPlotPoints([]);
+    setLatestNarrative(null);
+    beginStory();
+  };
+
   useEffect(() => {
     if (!hasInitialFetch.current) {
       beginStory();
@@ -141,6 +147,8 @@ export const Story: React.FC<{
             key={latestNarrative.text}
             onSelect={addPlotPoint}
             latestNarrative={latestNarrative}
+            resetStory={resetStory}
+            resetTheme={resetTheme}
           />
         )}
         <div ref={bottomRef}></div>

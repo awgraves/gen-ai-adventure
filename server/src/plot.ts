@@ -67,7 +67,7 @@ export const newPlot = (
     model: "gpt-4o-mini",
     temperature: 0.5,
   });
-  const chatHistory: BaseMessage[] = [];
+  let chatHistory: BaseMessage[] = [];
 
   const generateImageForCurrentPlotPoint = async () => {
     const lastPlotPoint = chatHistory[chatHistory.length - 1];
@@ -131,6 +131,7 @@ export const newPlot = (
   };
 
   const begin = async () => {
+    chatHistory = [];
     await generateNextPlotPoint();
   };
 

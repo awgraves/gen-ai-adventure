@@ -5,3 +5,32 @@
   align-items: center;
   justify-content: center;
 }
+
+.finalResult {
+  font-size: 3em;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    color: #646cffaa;
+  }
+  50% {
+    color: white;
+  }
+}
+
+.success {
+  font-weight: bold;
+  animation: pulse 2s infinite;
+}
+
+@font-face {
+  font-family: "BloodyModes";
+  src: url("./fonts/bloodymodes/BloodyModes-gwwYp.ttf");
+}
+
+.failure {
+  font-family: "BloodyModes";
+  color: #f54747;
+}
