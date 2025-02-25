@@ -16,7 +16,6 @@ export const ThemeSelection: React.FC<{
               <img
                 src={getImageUrl(option.imagePath)}
                 alt={option.description}
-                height="150"
               />
               <p>{option.description}</p>
             </button>

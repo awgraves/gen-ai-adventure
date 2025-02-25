@@ -18,10 +18,21 @@
 }
 
 .item {
-  will-change: filter;
-  transition: filter 300ms;
   margin: 0;
   padding: 0;
   height: 100%;
   width: 300px;
+}
+
+.item button {
+  height: 270px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.item button img {
+  margin-top: 1em;
+  height: 150px;
 }
