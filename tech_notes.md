@@ -11,7 +11,7 @@ Here's some example code of the custom streamed response approach:
 app.post("/plot", async (req: Request, res: Response) => {
   const plotRequest = z.object({
     theme: z.string(),
-    previousMessages: z.array(
+    history: z.array(
       z.object({
         type: z.string(),
         text: z.string(),
@@ -21,7 +21,7 @@ app.post("/plot", async (req: Request, res: Response) => {
 
   try {
     const params = plotRequest.parse(req.body);
-    const messages = params.previousMessages.map((m) =>
+    const messages = params.history.map((m) =>
       m.type === "NARRATIVE" ? new AIMessage(m.text) : new HumanMessage(m.text)
     );
     const stream = await generateNextPlotPointStream(params.theme, messages);

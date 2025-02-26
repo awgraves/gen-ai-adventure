@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { PlayerOptions } from "./PlayerOptions";
 import { PlotPoint } from "./types";
 import { PlotBoard } from "./PlotBoard";
-import useWebsocket, { ReadyState } from "react-use-websocket";
 import styles from "./Story.module.css";
-import { getImageUrl, STORY_WS_URL, SPEECH_URL } from "../../const";
+import { getImageUrl, SPEECH_URL } from "../../const";
 import { ThemeOption } from "../../types";
+import { fetchNextPlotPointStream } from "./fetchNextPlotPointStream";
 
 export const Story: React.FC<{
   theme: ThemeOption;
@@ -16,11 +16,9 @@ export const Story: React.FC<{
     null
   );
   const [includeSpeech, setIncludeSpeech] = useState(false);
+  const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const hasInitialFetch = useRef(false);
 
-  const { sendJsonMessage, lastJsonMessage, readyState } = useWebsocket(
-    STORY_WS_URL + "/" + theme.value
-  );
   const bottomRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -32,25 +30,43 @@ export const Story: React.FC<{
       point,
     ]);
     setLatestNarrative(null);
-    sendJsonMessage(point);
   };
 
-  const beginStory = () => {
-    sendJsonMessage({ begin: true });
+  const fetchNextPlotPoint = async () => {
+    setIsStreaming(true);
+    const stream = fetchNextPlotPointStream(theme.value, plotPoints);
+
+    for await (const value of stream) {
+      setLatestNarrative(value);
+    }
+    setIsStreaming(false);
   };
 
   const resetStory = () => {
     setPlotPoints([]);
     setLatestNarrative(null);
-    beginStory();
+    hasInitialFetch.current = false;
   };
 
   useEffect(() => {
-    if (!hasInitialFetch.current) {
-      beginStory();
+    if (
+      !hasInitialFetch.current ||
+      (plotPoints.length && plotPoints[plotPoints.length - 1].type === "CHOICE")
+    ) {
+      fetchNextPlotPoint();
       hasInitialFetch.current = true;
     }
-  }, [theme]);
+  }, [plotPoints]);
+
+  useEffect(() => {
+    if (!isStreaming && latestNarrative) {
+      if (includeSpeech) {
+        playAudio();
+      } else {
+        pauseAudio();
+      }
+    }
+  }, [isStreaming, latestNarrative, includeSpeech]);
 
   const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -65,41 +81,13 @@ export const Story: React.FC<{
     }
   };
 
-  useEffect(() => {
-    if (lastJsonMessage !== null) {
-      if ("error" in lastJsonMessage) {
-        console.error(lastJsonMessage.error);
-        return;
-      }
-      if ("text" in lastJsonMessage) {
-        const newNarrative = { type: "NARRATIVE", ...lastJsonMessage };
-        setLatestNarrative(newNarrative);
-      }
-      if ("messageFinished" in lastJsonMessage) {
-        if (includeSpeech) {
-          playAudio();
-        }
-      }
-    }
-  }, [lastJsonMessage, includeSpeech]);
+  const pauseAudio = () => {
+    audioRef.current?.pause();
+  };
 
   useEffect(() => {
     scrollToBottom();
   }, [plotPoints, latestNarrative]);
-
-  const getConnStyle = (readyState: ReadyState) => {
-    switch (readyState) {
-      case ReadyState.CONNECTING:
-        return { backgroundColor: "yellow" };
-      case ReadyState.OPEN:
-        return { backgroundColor: "green" };
-      case ReadyState.CLOSING:
-      case ReadyState.CLOSED:
-        return { backgroundColor: "red" };
-      default:
-        return { backgroundColor: "black" };
-    }
-  };
 
   return (
     <div className={styles.story}>
@@ -112,11 +100,6 @@ export const Story: React.FC<{
         }}
       >
         <div className={styles.topBar}>
-          <span>Connection: </span>
-          <div
-            className={styles.connIndicator}
-            style={getConnStyle(readyState)}
-          />
           <div className={styles.navOptions}>
             <div className={styles.switchContainer}>
               Audio:

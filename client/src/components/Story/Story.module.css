@@ -30,13 +30,6 @@
   gap: 1em;
 }
 
-.connIndicator {
-  margin-left: 0.5em;
-  border-radius: 50%;
-  height: 1em;
-  width: 1em;
-}
-
 .loadingContainer {
   display: flex;
   flex-direction: column;
