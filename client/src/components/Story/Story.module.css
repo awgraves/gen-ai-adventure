@@ -30,15 +30,16 @@
   gap: 1em;
 }
 
+#themeImage {
+  width: 100%;
+  max-width: 700px;
+}
+
 .loadingContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-.loadingContainer button {
-  margin-top: 0.5em;
 }
 
 .switch {

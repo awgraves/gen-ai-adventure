@@ -1,6 +1,7 @@
 .optionsList {
   margin-top: 1em;
   display: flex;
+  flex-wrap: wrap;
   gap: 1em;
   align-items: center;
   justify-content: center;

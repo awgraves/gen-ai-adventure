@@ -116,9 +116,9 @@ export const Story: React.FC<{
           </div>
         </div>
         <img
+          id={styles.themeImage}
           src={getImageUrl(theme.imagePath)}
           alt={theme.description}
-          height="250"
         />
         <PlotBoard plotPoints={plotPoints} latestNarrative={latestNarrative} />
         {!latestNarrative ? (
