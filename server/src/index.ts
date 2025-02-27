@@ -51,11 +51,12 @@ app.post("/plot", async (req: Request, res: Response) => {
     }
     res.end();
   } catch (e) {
+    console.log("error generating plot", e);
     if (e instanceof z.ZodError) {
       res.status(400).json({ error: e.issues });
       return;
     }
-    res.status(500).json({ error: e });
+    res.status(500).json({ error: `${e}` });
   }
 });
 
