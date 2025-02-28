@@ -5,8 +5,8 @@ WORKDIR /app
 COPY *.json ./
 COPY *.ts ./
 
-RUN npm install
+RUN yarn install
 
 EXPOSE 5173
 
-CMD ["npm", "run", "dev"]
+CMD ["yarn", "run", "dev"]

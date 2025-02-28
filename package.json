@@ -1,0 +1,16 @@
+{
+  "name": "gen-ai-adventure",
+  "version": "1.0.0",
+  "description": "A themed, text and audio based adventure game powered by generative AI.",
+  "main": "index.js",
+  "repository": "git@github.com:awgraves/gen-ai-adventure.git",
+  "author": "andrewgraves92@gmail.com",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "yarn workspaces -A run dev"
+  }
+}

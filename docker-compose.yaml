@@ -1,18 +1,18 @@
 version: "3"
 services:
   client:
-    build: ./client
+    build: ./apps/client
     ports:
       - 80:5173
     volumes:
-      - ./client:/app
+      - ./apps/client:/app
       - /app/node_modules
   server:
-    build: ./server
+    build: ./apps/server
     ports:
       - 9999:9999
     volumes:
-      - ./server:/app
+      - ./apps/server:/app
       - /app/node_modules
     env_file:
       - .env
