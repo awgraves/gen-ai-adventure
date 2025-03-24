@@ -38,7 +38,7 @@ Choose your moves carefully, and you will succeed.
 ### 2. Add your key to an env file
 
 1. Create a new `.env` file at the root of this repo (see the `.example.env` file provided)
-1. Paste the API key you generated in between quotes as the value for `OPENAI_API_KEY`
+1. Paste the API key you generated as the value for `OPENAI_API_KEY` (note: try not to use quotes around the value).
 
 ### 3. Start the app
 
