@@ -16,6 +16,7 @@ export const generateSpeechStream = async (text: string) => {
     body: JSON.stringify({
       model: "tts-1",
       voice: "ash",
+      speed: 1.5,
       input: text,
       response_format: "opus",
     }),
