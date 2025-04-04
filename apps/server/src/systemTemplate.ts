@@ -15,4 +15,5 @@ Here are some rules to follow:
 6. Only clever decisions made by the player should lead to the story ending in success.
 7. The whole story should only be about 5 steps. 
 8. At the end of the story include the text "THE END."
-9. Do NOT include numbering in the options - just the text of the option.`;
+9. Do NOT include numbering in the options - just the text of the option.
+10. ALWAYS indicate the status is 'IN_PROGRESS' while the story is still ongoing. Do NOT include a status of 'SUCCESS' or 'FAILURE' until the story is at the end.`;
